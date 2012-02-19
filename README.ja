@@ -1,0 +1,40 @@
+erbscan README
+
+erbscan はERBを高速にパースするためのライブラリです。
+
+
+1. 必要環境
+
+  * ruby 1.8
+  * C コンパイラ
+
+
+2. インストール方法
+
+  コマンドラインで以下のように入力してください。
+  UNIX 系 OS ではおそらく root 権限が必要になります。
+
+    $ ruby extconf.rb
+    $ make
+   ($ su)
+    # make install
+
+
+3. 使い方
+
+    require "erbscan"   # ライブラリのロード
+    
+    sc = ERBScanner.new
+    sc.trim_mode = 2    # trim_modeの指定(0..2)
+    sc.percent   = 1    # %で始まる行を処理するか(0..1)
+
+    sc.scan(obj, src)   # srcをスキャンする
+                        # objのtext,code,code_put,code_comment,code_percentメソッドが
+                        # 呼び出される。
+
+4. ライセンス
+
+  ライセンスはRubyのライセンスに従います。
+
+MoonWolf <moonwolf@moonwolf.com>
+http://www.moonwolf.com/ruby/
