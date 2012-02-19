@@ -1,11 +1,25 @@
+#ifdef HAVE_MALLOC_H
 #include "malloc.h"
+#endif
 #include "ruby.h"
+#ifndef HAVE_RUBY_INTERN_H
 #include "intern.h"
+#endif
+#ifndef HAVE_RUBY_UTIL_H
 #include "util.h"
+#else
+#include "ruby/util.h"
+#endif
 
 #ifdef StringValue
 #else
 #define StringValue(obj) (TYPE(obj)==T_STRING) ? (obj) : (rb_str_to_str(obj))
+#endif
+#ifndef RSTRING_PTR
+#define RSTRING_PTR(str) RSTRING(str)->ptr
+#endif
+#ifndef RSTRING_LEN
+#define RSTRING_LEN(str) RSTRING(str)->len
 #endif
 
 
@@ -52,6 +66,7 @@ static VALUE erbscan_initialize(VALUE self) {
   return self;
 }
 
+#if 0
 static VALUE erbscan_text(VALUE self, VALUE obj) {
   return obj;
 }
@@ -71,6 +86,7 @@ static VALUE erbscan_code_comment(VALUE self, VALUE obj) {
 static VALUE erbscan_code_percent(VALUE self, VALUE obj) {
   return obj;
 }
+#endif
 
 static VALUE erbscan_get_trim_mode(VALUE self) {
   struct Scanner *ptr;
@@ -146,7 +162,7 @@ static VALUE erbscan_set_explicit_trim(VALUE self, VALUE value) {
 static VALUE erbscan_scan(VALUE self, VALUE recv, VALUE str) {
   struct Scanner *sc;
   char *src;
-  int rest;
+  long rest;
   char ch;
   int head;
   char *content;
@@ -157,8 +173,8 @@ static VALUE erbscan_scan(VALUE self, VALUE recv, VALUE str) {
   str = StringValue(str);
   OBJ_FREEZE(str);
   
-  src  = RSTRING(str)->ptr;
-  rest = RSTRING(str)->len;
+  src  = RSTRING_PTR(str);
+  rest = RSTRING_LEN(str);
   
   Data_Get_Struct(self, struct Scanner, sc);
   
@@ -382,9 +398,7 @@ static VALUE erbscan_scan(VALUE self, VALUE recv, VALUE str) {
 }
 
 
-void Init_erbscan() {
-  ID id;
-  
+void Init_erbscan(void) {
   id_text = rb_intern("text");
   id_code = rb_intern("code");
   id_code_percent = rb_intern("code_percent");
